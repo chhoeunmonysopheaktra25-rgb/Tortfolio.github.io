@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="លុយខ្ញុំ">
+<meta name="theme-color" content="#0a0e1a">
+<title>លុយខ្ញុំ · AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e1a;--card:#131929;--card2:#1a2236;--border:rgba(255,255,255,0.07);--green:#10b981;--blue:#3b82f6;--red:#ef4444;--yellow:#f59e0b;--text:#f1f5f9;--muted:#64748b;--nav-h:64px;--safe-bot:env(safe-area-inset-bottom,0px)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans Khmer',sans-serif;display:flex;flex-direction:column;max-width:480px;margin:0 auto}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* HEADER */
+.hdr{height:56px;background:rgba(13,19,41,.97);border-bottom:1px solid var(--border);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:space-between;padding:0 18px;flex-shrink:0;z-index:50}
+.hdr-logo{display:flex;align-items:center;gap:9px}
+.hdr-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--green),var(--blue));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.hdr-title{font-size:.95rem;font-weight:700}
+.hdr-sub{font-size:.58rem;color:var(--muted)}
+.live-pill{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:var(--green);border-radius:20px;padding:3px 9px;font-size:.62rem;font-weight:600;display:flex;align-items:center;gap:4px}
+.ldot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* PAGES */
+.pages{flex:1;overflow:hidden;position:relative}
+.page{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:none;flex-direction:column;padding-bottom:calc(var(--nav-h) + var(--safe-bot) + 8px)}
+.page.active{display:flex}
+#page-chat.active{display:flex}
+
+/* BOTTOM NAV */
+.bnav{height:calc(var(--nav-h) + var(--safe-bot));padding-bottom:var(--safe-bot);background:rgba(13,19,41,.97);border-top:1px solid var(--border);backdrop-filter:blur(16px);display:flex;align-items:flex-start;justify-content:space-around;flex-shrink:0;z-index:50;padding-top:8px}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;border:none;background:none;cursor:pointer;border-radius:12px}
+.nb-icon{font-size:1.3rem;line-height:1;transition:transform .15s}
+.nb-lbl{font-size:.6rem;color:var(--muted);font-family:'Noto Sans Khmer',sans-serif;transition:color .15s}
+.nb.active .nb-lbl{color:var(--green);font-weight:700}
+.nb.active .nb-icon{transform:scale(1.15)}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 8px}
+.ct{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.cb{padding:0 16px 14px}
+
+/* HOME PAGE */
+#page-home{padding:0}
+.hscroll{padding:14px;display:flex;flex-direction:column;gap:14px}
+.bhero{background:linear-gradient(135deg,#0d1f18,#0a1628);border:1px solid rgba(16,185,129,.18);border-radius:20px;padding:20px;position:relative;overflow:hidden}
+.bhero::before{content:'';position:absolute;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,.1),transparent 70%);top:-50px;right:-30px}
+.bl{font-size:.65rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.bamt{font-size:2.4rem;font-weight:700;line-height:1.1}
+.bsub{font-size:.7rem;color:var(--muted);margin-top:3px}
+.bchips{display:flex;gap:8px;margin-top:16px}
+.bchip{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:12px;padding:10px 10px}
+.bcl{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.bcv{font-size:1rem;font-weight:700;margin-top:2px}
+
+/* budget bars */
+.bitem{margin-bottom:10px}
+.brow{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.bcat{font-size:.83rem}
+.bnums{font-size:.7rem}
+.bbg{height:7px;background:var(--card2);border-radius:4px;overflow:hidden}
+.bfill{height:100%;border-radius:4px;transition:width .5s ease}
+
+/* cat chips */
+.ccrow{display:flex;gap:8px;flex-wrap:wrap}
+.ccitem{flex:1;min-width:75px;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:10px 8px;text-align:center}
+.cci{font-size:1.3rem}
+.ccn{font-size:.6rem;color:var(--muted);margin-top:2px}
+.ccv{font-size:.88rem;font-weight:700;color:var(--red);margin-top:1px}
+.ccp{font-size:.58rem;color:var(--muted)}
+
+/* expense list */
+.ei{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+.ei:last-child{border-bottom:none}
+.eiw{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.eii{flex:1;min-width:0}
+.eid{font-size:.83rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eic{font-size:.63rem;color:var(--muted);margin-top:1px}
+.eir{text-align:right;flex-shrink:0}
+.eia{font-size:.88rem;font-weight:700;color:var(--red)}
+.eidt{font-size:.62rem;color:var(--muted);margin-top:1px}
+
+/* alert */
+.abar{display:flex;align-items:center;gap:8px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:10px 14px;font-size:.78rem;color:#fca5a5}
+
+/* CHAT PAGE */
+#page-chat{padding:0}
+.cmsgs{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 8px;display:flex;flex-direction:column;gap:10px}
+.msg{display:flex;flex-direction:column;gap:3px;max-width:86%}
+.msg.user{align-self:flex-end;align-items:flex-end}
+.msg.ai{align-self:flex-start}
+.mn{font-size:.6rem;color:var(--muted);padding:0 4px}
+.bbl{padding:11px 14px;border-radius:16px;font-size:.85rem;line-height:1.65}
+.msg.user .bbl{background:linear-gradient(135deg,var(--green),#059669);color:#fff;border-radius:16px 16px 4px 16px}
+.msg.ai .bbl{background:var(--card2);border:1px solid var(--border);border-radius:16px 16px 16px 4px}
+.typing{display:flex;gap:4px;align-items:center;padding:2px 0}
+.typing span{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1.1s infinite}
+.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.qrow{display:flex;gap:6px;padding:6px 14px 8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.qrow::-webkit-scrollbar{display:none}
+.qc{background:var(--card2);border:1px solid var(--border);color:var(--muted);border-radius:20px;padding:7px 13px;font-size:.72rem;cursor:pointer;font-family:'Noto Sans Khmer',sans-serif;white-space:nowrap;flex-shrink:0;transition:all .15s}
+.qc:active{background:rgba(16,185,129,.12);border-color:var(--green);color:var(--green)}
+.cbot{border-top:1px solid var(--border);background:var(--card);padding:10px 12px;padding-bottom:calc(10px + var(--safe-bot));flex-shrink:0}
+.cinrow{display:flex;gap:8px;align-items:flex-end}
+.cin{flex:1;background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:11px 14px;color:var(--text);font-family:'Noto Sans Khmer',sans-serif;font-size:.88rem;outline:none;resize:none;max-height:100px;line-height:1.4;transition:border .2s}
+.cin:focus{border-color:var(--green)}
+.sbtn{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--green),var(--blue));border:none;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .2s}
+.sbtn:active{opacity:.75}.sbtn:disabled{opacity:.35}
+
+/* ADD PAGE */
+#page-add{padding:14px;gap:14px}
+.atitle{font-size:1.1rem;font-weight:700;margin-bottom:2px}
+.asub{font-size:.78rem;color:var(--muted)}
+.amtbox{background:var(--card);border:2px solid var(--border);border-radius:18px;padding:18px 20px;display:flex;align-items:center;gap:8px;transition:border .2s}
+.amtbox:focus-within{border-color:var(--green)}
+.ds{font-size:1.8rem;font-weight:700;color:var(--muted)}
+.af{flex:1;background:none;border:none;outline:none;font-size:2rem;font-weight:700;color:var(--text);font-family:'Noto Sans Khmer',sans-serif;width:100%}
+.af::placeholder{color:var(--muted)}
+.catgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cpb{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:14px 8px;cursor:pointer;text-align:center;transition:all .15s}
+.cpb.sel{border-color:var(--green);background:rgba(16,185,129,.1)}
+.cpb:active{transform:scale(.96)}
+.cpbi{font-size:1.6rem}
+.cpbn{font-size:.68rem;color:var(--muted);margin-top:4px;font-family:'Noto Sans Khmer',sans-serif}
+.cpb.sel .cpbn{color:var(--green);font-weight:700}
+.dinp{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px 16px;color:var(--text);font-family:'Noto Sans Khmer',sans-serif;font-size:.88rem;outline:none;width:100%;transition:border .2s}
+.dinp:focus{border-color:var(--green)}
+.addbtn{background:linear-gradient(135deg,var(--green),var(--blue));border:none;border-radius:16px;padding:16px;color:#fff;font-weight:700;font-size:1rem;font-family:'Noto Sans Khmer',sans-serif;cursor:pointer;width:100%;transition:opacity .2s}
+.addbtn:active{opacity:.82}
+.slbl{font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+
+/* SETTINGS PAGE */
+#page-settings{padding:14px;gap:14px}
+.sicard{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px}
+.irow{display:flex;gap:8px}
+.iinp{flex:1;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;color:var(--text);font-family:'Noto Sans Khmer',sans-serif;font-size:.9rem;outline:none;transition:border .2s}
+.iinp:focus{border-color:var(--green)}
+.ibtn{background:var(--green);border:none;border-radius:12px;padding:0 18px;color:#fff;font-weight:700;cursor:pointer;font-family:'Noto Sans Khmer',sans-serif;font-size:.85rem}
+.berow{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border)}
+.berow:last-child{border-bottom:none}
+.becat{flex:1;font-size:.85rem}
+.beinp{width:70px;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:7px 10px;color:var(--text);font-family:'Noto Sans Khmer',sans-serif;font-size:.82rem;text-align:right;outline:none}
+.beinp:focus{border-color:var(--green)}
+.actbrow{display:flex;gap:8px}
+.actb{flex:1;border:none;border-radius:12px;padding:11px 8px;cursor:pointer;font-family:'Noto Sans Khmer',sans-serif;font-size:.78rem;font-weight:700}
+
+/* TOAST */
+.toast{position:fixed;bottom:calc(var(--nav-h) + 14px + var(--safe-bot));left:50%;transform:translateX(-50%);background:#1e293b;border:1px solid var(--border);border-radius:12px;padding:10px 18px;font-size:.82rem;color:var(--text);z-index:999;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:tin .25s ease;pointer-events:none}
+@keyframes tin{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* colors */
+.green{color:var(--green)}.red{color:var(--red)}.yellow{color:var(--yellow)}
+.fbg{background:rgba(245,158,11,.12)}.hbg{background:rgba(59,130,246,.12)}.mbg{background:rgba(139,92,246,.12)}.ubg{background:rgba(16,185,129,.12)}.obg{background:rgba(100,116,139,.12)}
+.empty{text-align:center;color:var(--muted);font-size:.8rem;padding:16px 0}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-logo">
+    <div class="hdr-icon">💰</div>
+    <div>
+      <div class="hdr-title">លុយខ្ញុំ</div>
+      <div class="hdr-sub" id="hdr-month">April 2026</div>
+    </div>
+  </div>
+  <div class="live-pill"><div class="ldot"></div>AI On</div>
+</header>
+
+<!-- PAGES -->
+<div class="pages">
+
+  <!-- ①  HOME -->
+  <div class="page active" id="page-home">
+    <div class="hscroll">
+      <div class="bhero">
+        <div class="bl">💵 នៅសល់ខែនេះ</div>
+        <div class="bamt green" id="h-remain">$500.00</div>
+        <div class="bsub" id="h-sub">ចំណូល $500 · ចំណាយ $0</div>
+        <div class="bchips">
+          <div class="bchip"><div class="bcl">ចំណូល</div><div class="bcv green" id="h-inc">$500</div></div>
+          <div class="bchip"><div class="bcl">ចំណាយ</div><div class="bcv red" id="h-sp">$0</div></div>
+          <div class="bchip"><div class="bcl">%ចំណាយ</div><div class="bcv yellow" id="h-pct">0%</div></div>
+        </div>
+      </div>
+      <div id="h-alerts"></div>
+      <div class="card">
+        <div class="ch"><span class="ct">🎯 Budget</span><span style="font-size:.7rem;color:var(--muted);cursor:pointer" onclick="goPage('settings')">កែ ›</span></div>
+        <div class="cb" id="h-bud"></div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="ct">📊 Category</span></div>
+        <div class="cb"><div class="ccrow" id="h-cats"><div class="empty" style="width:100%">មិនទាន់មានចំណាយ</div></div></div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="ct">🕐 ថ្មីៗ</span><span style="font-size:.7rem;color:var(--muted)">5 ចុងក្រោយ</span></div>
+        <div class="cb" id="h-rec"><div class="empty">មិនទាន់មានការចំណាយ</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ②  CHAT -->
+  <div class="page" id="page-chat">
+    <div class="cmsgs" id="cmsgs"></div>
+    <div class="qrow">
+      <button class="qc" onclick="qs('ចំណាយ 5$ ម្ហូប')">🍜 ម្ហូប</button>
+      <button class="qc" onclick="qs('Electric bill 15$')">💡 ភ្លើង</button>
+      <button class="qc" onclick="qs('fuel 3$')">🏍️ ឥន្ធនៈ</button>
+      <button class="qc" onclick="qs('របាយការណ៍ខែនេះ')">📊 Report</button>
+      <button class="qc" onclick="qs('advice')">💡 Advice</button>
+      <button class="qc" onclick="qs('នៅសល់ប៉ុន្មាន')">💰 Balance</button>
+      <button class="qc" onclick="qs('លុប')">🗑️ Undo</button>
+    </div>
+    <div class="cbot">
+      <div class="cinrow">
+        <textarea class="cin" id="cin" rows="1" placeholder="ឧ. ចំណាយ 20$ ម្ហូប..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();doSend()}" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"></textarea>
+        <button class="sbtn" id="sbtn" onclick="doSend()">↑</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③  ADD -->
+  <div class="page" id="page-add">
+    <div><div class="atitle">➕ ចុះចំណាយ</div><div class="asub">វាយចំនួន → ជ្រើស Category → Save</div></div>
+    <div>
+      <div class="slbl">ចំនួនលុយ</div>
+      <div class="amtbox"><span class="ds">$</span><input class="af" id="af" type="number" inputmode="decimal" placeholder="0.00" min="0" step="0.01"></div>
+    </div>
+    <div>
+      <div class="slbl">Category</div>
+      <div class="catgrid" id="catgrid"></div>
+    </div>
+    <div>
+      <div class="slbl">ពិពណ៌នា (optional)</div>
+      <input class="dinp" id="dinp" type="text" placeholder="ឧ. ទៅ ABC Mart...">
+    </div>
+    <button class="addbtn" onclick="addExp()">💾 Save ចំណាយ</button>
+    <div>
+      <div class="slbl">ចំណាយ 3 ចុងក្រោយ</div>
+      <div class="card"><div class="cb" style="padding-top:12px" id="add-rec"><div class="empty">មិនទាន់មានការចំណាយ</div></div></div>
+    </div>
+  </div>
+
+  <!-- ④  SETTINGS -->
+  <div class="page" id="page-settings">
+    <div class="sicard">
+      <div class="ct" style="margin-bottom:12px">💵 ប្រាក់ចំណូលប្រចាំខែ</div>
+      <div class="irow">
+        <input class="iinp" id="iinp" type="number" inputmode="decimal" placeholder="500">
+        <button class="ibtn" onclick="setInc()">កំណត់</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><span class="ct">🎯 កែ Budget ប្រចាំ Category</span></div>
+      <div id="bedit"></div>
+    </div>
+    <div class="card">
+      <div class="ch"><span class="ct">🔒 Backup & Restore</span></div>
+      <div class="cb" style="padding-top:4px">
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:10px">Export JSON → Import ត្រលប់ → data មិនបាត់ ✅</div>
+        <div class="actbrow">
+          <button class="actb" style="background:rgba(16,185,129,.15);color:var(--green)" onclick="expData()">📥 Export</button>
+          <button class="actb" style="background:rgba(59,130,246,.15);color:var(--blue)" onclick="document.getElementById('impf').click()">📤 Import</button>
+          <button class="actb" style="background:rgba(239,68,68,.1);color:var(--red)" onclick="resetData()">🗑️ Reset</button>
+        </div>
+        <input type="file" id="impf" accept=".json" style="display:none" onchange="impData(event)">
+        <div style="margin-top:8px;font-size:.7rem;color:var(--muted)">💾 Auto-save ON · <span id="ecnt">0</span> entries</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><span class="ct">📱 Add to Home Screen</span></div>
+      <div class="cb" style="padding-top:4px;font-size:.78rem;color:var(--muted);line-height:1.8">
+        <b style="color:var(--text)">Android Chrome:</b><br>⋮ Menu → "Add to Home screen"<br><br>
+        <b style="color:var(--text)">iPhone Safari:</b><br>Share 📤 → "Add to Home Screen"
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <button class="nb active" id="nav-home" onclick="goPage('home')"><span class="nb-icon">🏠</span><span class="nb-lbl">ទំព័រដើម</span></button>
+  <button class="nb" id="nav-chat" onclick="goPage('chat')"><span class="nb-icon">💬</span><span class="nb-lbl">AI Chat</span></button>
+  <button class="nb" id="nav-add" onclick="goPage('add')"><span class="nb-icon">➕</span><span class="nb-lbl">ចំណាយ</span></button>
+  <button class="nb" id="nav-settings" onclick="goPage('settings')"><span class="nb-icon">⚙️</span><span class="nb-lbl">ការកំណត់</span></button>
+</nav>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const C={
+  food:{icon:'🍜',name:'ម្ហូប',bg:'fbg',def:150,kw:['ម្ហូប','food','eat','restaurant','cafe','coffee','បាយ','នំ','market','mart','kfc','pizza','burger','noodle','គុយទាវ','lunch','dinner','breakfast','snack','drink','ទឹក']},
+  home:{icon:'🏠',name:'ផ្ទះ',bg:'hbg',def:100,kw:['ផ្ទះ','rent','house','room','ជួល']},
+  moto:{icon:'🏍️',name:'ម៉ូតូ',bg:'mbg',def:80,kw:['ម៉ូតូ','moto','loan','fuel','gas','petrol','xang','ឥន្ធនៈ','ជួសជុល','mechanic']},
+  util:{icon:'💡',name:'ទឹកភ្លើង',bg:'ubg',def:50,kw:['ទឹកភ្លើង','electric','water','bill','internet','wifi','phone','ទូរស័ព្ទ','ភ្លើង']},
+  other:{icon:'📱',name:'ផ្សេងៗ',bg:'obg',def:60,kw:[]},
+};
+let S={income:500,expenses:[],bud:{food:150,home:100,moto:80,util:50,other:60}};
+try{const r=localStorage.getItem('lk2');if(r){const p=JSON.parse(r);S={...S,...p};if(!S.bud)S.bud={food:150,home:100,moto:80,util:50,other:60};}}catch(e){}
+const sv=()=>localStorage.setItem('lk2',JSON.stringify(S));
+const tot=()=>S.expenses.reduce((a,e)=>a+e.amount,0);
+const cs=k=>S.expenses.filter(e=>e.cat===k).reduce((a,e)=>a+e.amount,0);
+const tod=()=>new Date().toLocaleDateString('km-KH',{month:'short',day:'numeric'});
+
+// ── NAV ──────────────────────────────────────────────────────────────────────
+let curPage='home';
+function goPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.getElementById('nav-'+p)?.classList.add('active');
+  curPage=p;
+  if(p==='home')renderHome();
+  if(p==='add')renderAdd();
+  if(p==='settings')renderSettings();
+  if(p==='chat')setTimeout(()=>{const m=document.getElementById('cmsgs');m.scrollTop=m.scrollHeight;},50);
+}
+
+// ── RENDER HOME ───────────────────────────────────────────────────────────────
+function renderHome(){
+  const sp=tot(),rem=S.income-sp,pct=S.income>0?Math.round(sp/S.income*100):0;
+  document.getElementById('h-remain').textContent='$'+Math.max(0,rem).toFixed(2);
+  document.getElementById('h-remain').className='bamt '+(rem<0?'red':'green');
+  document.getElementById('h-inc').textContent='$'+S.income;
+  document.getElementById('h-sp').textContent='$'+sp.toFixed(2);
+  document.getElementById('h-pct').textContent=pct+'%';
+  document.getElementById('h-sub').textContent=`ចំណូល $${S.income} · ចំណាយ $${sp.toFixed(2)}`;
+  // Alerts
+  const al=[];
+  Object.entries(C).forEach(([k,c])=>{const s=cs(k),b=S.bud[k]||c.def,l=b-s;if(l<0)al.push(`🚨${c.icon}${c.name}:លើស $${Math.abs(l).toFixed(0)}`);else if(s>0&&l<b*.2)al.push(`⚠️${c.icon}${c.name}:នៅសល់ $${l.toFixed(0)}`);});
+  document.getElementById('h-alerts').innerHTML=al.map(a=>`<div class="abar">${a}</div>`).join('');
+  // Budget
+  document.getElementById('h-bud').innerHTML=Object.entries(C).map(([k,c])=>{
+    const s=cs(k),b=S.bud[k]||c.def,p=Math.min(100,Math.round(s/b*100)),col=p>=90?'var(--red)':p>=70?'var(--yellow)':'var(--green)';
+    return `<div class="bitem"><div class="brow"><span class="bcat">${c.icon} ${c.name}</span><span class="bnums" style="color:${col}">$${s.toFixed(0)} <span style="color:var(--muted)">/ $${b}</span></span></div><div class="bbg"><div class="bfill" style="width:${p}%;background:${col}"></div></div></div>`;
+  }).join('');
+  // Cat chips
+  const hc=Object.keys(C).some(k=>cs(k)>0);
+  document.getElementById('h-cats').innerHTML=hc
+    ?Object.entries(C).map(([k,c])=>{const s=cs(k);if(!s)return'';const p=S.income>0?Math.round(s/S.income*100):0;return`<div class="ccitem"><div class="cci">${c.icon}</div><div class="ccn">${c.name}</div><div class="ccv">$${s.toFixed(2)}</div><div class="ccp">${p}%</div></div>`;}).join('')
+    :'<div class="empty" style="width:100%">Chat ឬ ➕ ចំណាយ ដើម្បីឃើញ</div>';
+  // Recent
+  const rc=[...S.expenses].reverse().slice(0,5);
+  document.getElementById('h-rec').innerHTML=rc.length
+    ?rc.map(e=>{const c=C[e.cat]||C.other;return`<div class="ei"><div class="eiw ${c.bg}">${c.icon}</div><div class="eii"><div class="eid">${e.desc||c.name}</div><div class="eic">${c.name}</div></div><div class="eir"><div class="eia">-$${e.amount.toFixed(2)}</div><div class="eidt">${e.date}</div></div></div>`;}).join('')
+    :'<div class="empty">មិនទាន់មានការចំណាយ</div>';
+  document.getElementById('ecnt').textContent=S.expenses.length;
+  sv();
+}
+
+// ── RENDER ADD ────────────────────────────────────────────────────────────────
+let selCat='food';
+function renderAdd(){
+  document.getElementById('catgrid').innerHTML=Object.entries(C).map(([k,c])=>`<button class="cpb ${k===selCat?'sel':''}" onclick="selC('${k}')"><div class="cpbi">${c.icon}</div><div class="cpbn">${c.name}</div></button>`).join('');
+  const r=[...S.expenses].reverse().slice(0,3);
+  document.getElementById('add-rec').innerHTML=r.length?r.map(e=>{const c=C[e.cat]||C.other;return`<div class="ei"><div class="eiw ${c.bg}">${c.icon}</div><div class="eii"><div class="eid">${e.desc||c.name}</div></div><div class="eir"><div class="eia">-$${e.amount.toFixed(2)}</div></div></div>`;}).join(''):'<div class="empty">មិនទាន់មានការចំណាយ</div>';
+}
+function selC(k){selCat=k;renderAdd();}
+function addExp(){
+  const amt=parseFloat(document.getElementById('af').value),desc=(document.getElementById('dinp').value.trim()||C[selCat].name);
+  if(!amt||amt<=0){showToast('⚠️ សូមវាយចំនួនលុយ!');return;}
+  S.expenses.push({amount:amt,desc,cat:selCat,date:tod(),ts:Date.now()});
+  sv();renderHome();
+  const b=S.bud[selCat]||C[selCat].def,left=b-cs(selCat);
+  showToast(`✅ $${amt} ${C[selCat].icon} ${C[selCat].name} · នៅសល់ $${left.toFixed(0)}`);
+  aiMsg(`✅ **$${amt}** → ${C[selCat].icon} ${C[selCat].name}\nBudget នៅសល់: **$${Math.max(0,left).toFixed(0)}**`);
+  document.getElementById('af').value='';document.getElementById('dinp').value='';
+  renderAdd();
+}
+
+// ── RENDER SETTINGS ───────────────────────────────────────────────────────────
+function renderSettings(){
+  document.getElementById('iinp').value=S.income;
+  document.getElementById('bedit').innerHTML=Object.entries(C).map(([k,c])=>`<div class="berow"><span class="becat">${c.icon} ${c.name}</span><span style="font-size:.7rem;color:var(--muted);margin-right:4px">$</span><input class="beinp" id="be-${k}" type="number" value="${S.bud[k]||c.def}" onchange="sbud('${k}',this.value)"></div>`).join('');
+  document.getElementById('ecnt').textContent=S.expenses.length;
+}
+function setInc(){const v=parseFloat(document.getElementById('iinp').value);if(v>0){S.income=v;sv();renderHome();showToast('✅ ចំណូល $'+v+' បានកំណត់');}}
+function sbud(k,v){const val=parseFloat(v);if(val>0){S.bud[k]=val;sv();renderHome();showToast('✅ Budget '+C[k].name+' = $'+val);}}
+
+// ── CHAT ENGINE ───────────────────────────────────────────────────────────────
+function umsg(t){const m=document.getElementById('cmsgs');m.innerHTML+=`<div class="msg user"><div class="mn">អ្នក 👤</div><div class="bbl">${esc(t)}</div></div>`;m.scrollTop=m.scrollHeight;}
+function aiMsg(t){const m=document.getElementById('cmsgs');m.innerHTML+=`<div class="msg ai"><div class="mn">AI 🤖</div><div class="bbl">${fmt(t)}</div></div>`;m.scrollTop=m.scrollHeight;}
+function addTyp(){const m=document.getElementById('cmsgs');m.innerHTML+=`<div class="msg ai" id="typ"><div class="mn">AI 🤖</div><div class="bbl"><div class="typing"><span></span><span></span><span></span></div></div></div>`;m.scrollTop=m.scrollHeight;}
+function rmTyp(){document.getElementById('typ')?.remove();}
+function fmt(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');}
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function dcat(t){const tl=t.toLowerCase();for(const[k,c]of Object.entries(C)){if(k==='other')continue;if(c.kw.some(w=>tl.includes(w.toLowerCase())))return k;}return'other';}
+function damt(t){const pp=[/\$\s*(\d+(?:\.\d+)?)/,/(\d+(?:\.\d+)?)\s*\$/,/(\d+(?:\.\d+)?)\s*(?:dollar|usd)/i,/(?:ចំណាយ|បង់|ទិញ|pay|spent?|cost|fuel|bill)\s*(\d+(?:\.\d+)?)/i,/(\d+(?:\.\d+)?)/];for(const p of pp){const m=t.match(p);if(m)return parseFloat(m[1]);}return null;}
+function isExp(t){const tl=t.toLowerCase(),tr=['ចំណាយ','បង់','ទិញ','spent','spend','pay','paid','buy','bought','cost','bill','loan','fuel'];if((tl.includes('$')||/\d/.test(tl))&&Object.values(C).flatMap(c=>c.kw).some(w=>tl.includes(w.toLowerCase())))return true;return tr.some(w=>tl.includes(w))&&/\d/.test(tl);}
+
+function lAI(text){
+  const sp=tot(),rem=S.income-sp,pct=S.income>0?Math.round(sp/S.income*100):0;
+  // EXPENSE
+  if(isExp(text)){
+    const amt=damt(text);
+    if(amt&&amt>0){
+      const cat=dcat(text),c=C[cat],b=S.bud[cat]||c.def;
+      S.expenses.push({amount:amt,desc:text.slice(0,60),cat,date:tod(),ts:Date.now()});
+      sv();renderHome();
+      const left=b-cs(cat);
+      let r=`✅ **$${amt}** → ${c.icon} ${c.name}\n`;
+      if(left<0)r+=`🚨 **លើស budget $${Math.abs(left).toFixed(0)}!**`;
+      else if(left<b*.2)r+=`⚠️ Budget នៅសល់: **$${left.toFixed(0)}**`;
+      else r+=`✅ Budget នៅសល់: **$${left.toFixed(0)}**`;
+      return r;
+    }
+    return'🤔 រកចំនួនលុយមិនឃើញ\nសូមសរសេរ: **"ចំណាយ 5$ ម្ហូប"**';
+  }
+  // REPORT
+  if(/report|summary|សង្ខេប|របាយ|ចំណាយប៉ុន្មាន|overview/i.test(text)){
+    let r=`📊 **Report ${new Date().toLocaleDateString('en',{month:'long'})}**\n\n💵 $${S.income} | ❌ $${sp.toFixed(2)} | ✅ $${rem.toFixed(2)}\n\n`;
+    Object.entries(C).forEach(([k,c])=>{const s=cs(k);if(!s)return;const p=Math.round(s/S.income*100);r+=`${c.icon} ${c.name}: **$${s.toFixed(2)}** (${p}%)\n`;});
+    r+=`\n`+(pct>80?`🚨 ចំណាយ ${pct}% — ប្រុងប្រយ័ត្ន!`:pct>60?`⚠️ ចំណាយ ${pct}%`:` ✅ ចំណាយ ${pct}% — ល្អ!`);
+    return r;
+  }
+  // ADVICE
+  if(/advice|ណែនាំ|tip|save|សន្សំ|ជួយ|analyze/i.test(text)){
+    if(!S.expenses.length)return'😊 ចាប់ផ្តើម track ចំណាយជាមុន ហើយខ្ញុំផ្តល់ advice! 💪';
+    const top=Object.entries(C).filter(([k])=>cs(k)>0).sort((a,b)=>cs(b[0])-cs(a[0]))[0];
+    const[tk,tc]=top,ts=cs(tk),tp=Math.round(ts/S.income*100);
+    let r=`💡 **Advice:**\n\nចំណាយច្រើន: ${tc.icon} ${tc.name} ($${ts.toFixed(2)}, ${tp}%)\n\n`;
+    if(tk==='food')r+=`🍜 ចំអិនផ្ទះ → សន្សំ ~$30\n`;
+    if(tk==='util')r+=`💡 ពិនិត្យ subscription ដែលមិនប្រើ\n`;
+    if(tk==='moto')r+=`🏍️ Carpool ឬ bicycle ថ្ងៃខ្លះ\n`;
+    r+=`\n📐 **50/30/20:** Needs $${Math.round(S.income*.5)} | Wants $${Math.round(S.income*.3)} | **Save $${Math.round(S.income*.2)}**`;
+    return r;
+  }
+  // BALANCE
+  if(/នៅសល់|balance|remaining|ស្ថានភាព|show|បង្ហាញ/i.test(text)){
+    if(!S.expenses.length)return'📭 មិនទាន់មានការចំណាយ!\nចុច ➕ ដើម្បីចំណាយ 😊';
+    let r=`💰 **Balance:**\n✅ ចំណូល: $${S.income} | ❌ ចំណាយ: $${sp.toFixed(2)} | 💵 **នៅសល់: $${rem.toFixed(2)}**\n\n`;
+    [...S.expenses].reverse().slice(0,5).forEach(e=>{const c=C[e.cat]||C.other;r+=`${c.icon} $${e.amount} — ${(e.desc||c.name).slice(0,25)}\n`;});
+    return r;
+  }
+  // UNDO
+  if(/លុប|undo|delete|remove|cancel/i.test(text)){
+    if(!S.expenses.length)return'📭 គ្មានការចំណាយដែលអាចលុបបានទេ';
+    const rm=S.expenses.pop();sv();renderHome();
+    return`🗑️ **បានលុប:** $${rm.amount} ${C[rm.cat]?.icon} ${C[rm.cat]?.name}`;
+  }
+  // GREETING
+  if(/សួស្តី|hello|hi|hey|ជំរាប/i.test(text))return`សួស្តី! 👋\n\n• **"ចំណាយ 20$ ម្ហូប"**\n• **"Electric bill 15$"**\n• **"រាយការណ៍"**\n• **"advice"**\n\nឬចុច ➕ ខាងក្រោម! 💪`;
+  return`🤖 **AI Money Manager**\n\n• **"ចំណាយ [លុយ]$ [អ្វី]"**\n• **"របាយការណ៍"**\n• **"advice"**\n• **"នៅសល់?"**\n• **"លុប"** → undo\n\nឬចុច ➕ ចំណាយផ្ទាល់! 😊`;
+}
+
+async function doSend(){
+  const inp=document.getElementById('cin'),btn=document.getElementById('sbtn');
+  const text=inp.value.trim();if(!text)return;
+  umsg(text);inp.value='';inp.style.height='auto';btn.disabled=true;
+  addTyp();await new Promise(r=>setTimeout(r,450));rmTyp();
+  aiMsg(lAI(text));btn.disabled=false;
+}
+function qs(t){document.getElementById('cin').value=t;doSend();goPage('chat');}
+
+// ── BACKUP ────────────────────────────────────────────────────────────────────
+function expData(){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:'application/json'}));
+  a.download=`luykh_${new Date().toISOString().slice(0,10)}.json`;a.click();
+  showToast('📥 Export ជោគជ័យ!');
+}
+function impData(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.income!==undefined&&Array.isArray(d.expenses)){S={...S,...d};sv();renderHome();renderSettings();showToast(`✅ Import ${S.expenses.length} entries!`);aiMsg(`✅ **Import ជោគជ័យ!** ${S.expenses.length} entries 🎉`);}else showToast('❌ File មិនត្រឹមត្រូវ!');}catch{showToast('❌ File ខូច!');}};
+  r.readAsText(f);e.target.value='';
+}
+function resetData(){
+  if(!confirm('⚠️ លុប data ទាំងអស់?'))return;
+  S={income:S.income,expenses:[],bud:S.bud};sv();renderHome();
+  showToast('🗑️ Reset!');aiMsg('🗑️ Data reset! ចាប់ផ្តើមថ្មី 💪');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+let tt;
+function showToast(m){clearTimeout(tt);document.querySelector('.toast')?.remove();const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);tt=setTimeout(()=>t?.remove(),3000);}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+document.getElementById('hdr-month').textContent=new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'});
+renderHome();
+aiMsg(`សួស្តី! 👋 **ជំរាបសួរ!**\n\n💬 Chat ខ្ញុំ:\n"ចំណាយ 20$ ម្ហូប"\n"Electric bill 15$"\n"advice"\n\n➕ Tab **ចំណាយ** → ចំណាយផ្ទាល់\n🏠 **ទំព័រដើម** → Dashboard`);
+</script>
+</body>
+</html>
